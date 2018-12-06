@@ -1,31 +1,41 @@
+var minSlider;
+var maxSlider;
+
+//w is the windows width, h is the height
+var w = window.innerWidth
+var h = window.innerHeight
+
 function setup() {
-
-  //w is the windows width, h is the height
-  var w = window.innerWidth
-  var h = window.innerHeight
-
   //Full sized canvas
   createCanvas(w, h);
   pixelDensity(1);
-  loadPixels();
 
+  //Sliders to zoom with
+  minSlider = createSlider(-2.5, 0, -2.5, 0.01);
+  maxSlider = createSlider(0, 2.5, 2.5, 0.01);
+}
+
+function draw() {
+
+  //The maximum number of iterations to the below loop
+  var maxIterations = 100;
+
+  loadPixels();
   //This nested for-loop touches every pixel
   for(var x = 0; x < width; x++){
     for(var y = 0; y < height; y++){
 
-      //The maximum number of iterations to the below loop
-      var maxIterations = 100;
-
       //a + bi
-      var a = map(x, 0, width, -2, 2);
-      var b = map(y, 0, height, -2, 2);
+      var a = map(x, 0, width, minSlider.value(), maxSlider.value());
+      var b = map(y, 0, height, minSlider.value(), maxSlider.value());
 
-      //Temp vars
+      //Temp var
       var tempA = a;
       var tempB = b;
 
       //Calculate real-components of each iteration
       var n  = 0 //count variable
+
       while (n < maxIterations){
 
         //Calculating components of next iterations:
@@ -42,19 +52,24 @@ function setup() {
         b = b_component + tempB;
 
         //Does the iteration diverge?
-        if(abs(a + b) > 16) {
+        if(a * a + b * b > 16) {
           break;
         }
 
         n++;
       }
 
-      var brightness = 200; //background, set diverges
-      if(n === maxIterations){ //foreground, set converges
+      //background, set diverges:
+      var brightness = map(n, 0, maxIterations, 0, 1);
+      brightness = map(sqrt(brightness), 0, 1, 0, 255);
+
+
+      //foreground, set converges:
+      if(n == maxIterations){ 
         brightness = 0;
       }
 
-      //Assigne all pixels to brightness
+      //Assign all pixels to brightness
       var pix = (x + y * width) * 4;
       pixels[pix + 0] = brightness;
       pixels[pix + 1] = brightness;
@@ -64,8 +79,4 @@ function setup() {
     }
   }
   updatePixels();
-}
-
-function draw() {
-  // put drawing code here
 }
