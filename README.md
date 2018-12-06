@@ -1,4 +1,4 @@
-## This is a green rain matrix effect completed in p5.js
+## This is a mandelbrot-set effect completed in p5.js
 
 Made using the video tutorial here: https://www.youtube.com/watch?v=6z7GQewK-Ks
 
